@@ -1,42 +1,21 @@
 {
   "manifest_version": 3,
   "name": "Billy Blocksi: Enterprise Filter",
-  "version": "1.2",
-  "description": "Professional high-speed classroom management engine.",
+  "version": "1.4",
   "permissions": [
     "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
+    "declarativeNetRequestFeedback", 
     "storage",
     "tabs",
     "notifications",
-    "alarms",
-    "browsingData",
-    "webNavigation"
+    "browsingData"
   ],
   "host_permissions": ["<all_urls>"],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "background": { "service_worker": "background.js" },
   "declarative_net_request": {
     "rule_resources": [
-      {
-        "id": "ublock_base",
-        "enabled": true,
-        "path": "ublock-filters.json"
-      },
-      {
-        "id": "easylist_base",
-        "enabled": true,
-        "path": "easylist.json"
-      },
-      {
-        "id": "billy_static",
-        "enabled": true,
-        "path": "rules.json"
-      }
+      { "id": "ublock", "enabled": true, "path": "ublock-filters.json" }
     ]
   },
-  "action": {
-    "default_popup": "blocked.html"
-  }
+  "action": { "default_popup": "popup.html" }
 }
