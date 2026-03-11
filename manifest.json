@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Billy Blocksi - Enterprise",
+  "version": "1.0",
+  "description": "Professional Classroom Management Engine",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "storage",
+    "tabs",
+    "identity"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ublock_rules",
+        "enabled": true,
+        "path": "ublock-filters.json"
+      },
+      {
+        "id": "billy_custom",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
