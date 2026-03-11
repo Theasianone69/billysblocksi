@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Billy Blocksi: Enterprise Filter",
-  "version": "1.0",
+  "version": "1.2",
   "description": "Professional high-speed classroom management engine.",
   "permissions": [
     "declarativeNetRequest",
@@ -9,7 +9,9 @@
     "storage",
     "tabs",
     "notifications",
-    "alarms"
+    "alarms",
+    "browsingData",
+    "webNavigation"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {
@@ -35,6 +37,6 @@
     ]
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "blocked.html"
   }
 }
