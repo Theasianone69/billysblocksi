@@ -1,0 +1,39 @@
+// dashboard.js - Teacher Dashboard Simulation
+
+// This list would come from your Firebase Database
+const students = [
+    { name: "Billy S.", status: "Online", lastSite: "google.com" },
+    { name: "Sarah J.", status: "Online", lastSite: "docs.google.com" },
+    { name: "Mike T.", status: "Online", lastSite: "poki.com" }
+];
+
+function renderGrid() {
+    const grid = document.getElementById('studentGrid');
+    grid.innerHTML = '';
+    
+    students.forEach(s => {
+        grid.innerHTML += `
+            <div class="student-card">
+                <div class="screen-thumb">LIVE PREVIEW</div>
+                <div style="font-weight: bold;">${s.name}</div>
+                <div class="status-online">● ${s.status}</div>
+                <div style="font-size: 12px; color: #64748b;">Current: ${s.lastSite}</div>
+            </div>
+        `;
+    });
+    document.getElementById('student-count').innerText = `Online: ${students.length}`;
+}
+
+function sendCommand(action) {
+    const url = document.getElementById('targetUrl').value;
+    if (!url) return alert("Please enter a URL first!");
+
+    console.log(`[FIREBASE] Sending ${action} for ${url} to all students...`);
+    
+    // In the real version, this is where you write to Firebase:
+    // db.ref('commands').push({ action: action, url: url });
+    
+    alert(`${action} command sent for: ${url}`);
+}
+
+renderGrid();
