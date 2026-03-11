@@ -1,21 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Billy Blocksi: Enterprise Filter",
-  "version": "1.4",
+  "name": "Billy Blocksi: God Mode",
+  "version": "1.5",
   "permissions": [
     "declarativeNetRequest",
-    "declarativeNetRequestFeedback", 
     "storage",
     "tabs",
-    "notifications",
-    "browsingData"
+    "scripting",
+    "browsingData",
+    "notifications"
   ],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
-  "declarative_net_request": {
-    "rule_resources": [
-      { "id": "ublock", "enabled": true, "path": "ublock-filters.json" }
-    ]
-  },
   "action": { "default_popup": "popup.html" }
 }
