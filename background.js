@@ -1,64 +1,45 @@
-/**
- * Billy Blocksi Enterprise Logic - Final Force Version
- */
-
+// background.js
 const BLOCKED_PAGE = chrome.runtime.getURL("blocked.html");
 
-// 1. Initialization - Nuke cache on start to ensure a clean state
-chrome.runtime.onInstalled.addListener(() => {
-    console.log("Billy Blocksi: System Initialized. Force-clearing service worker cache...");
-    chrome.browsingData.remove({ "since": 0 }, { "serviceWorkers": true, "cache": true });
-});
-
-/**
- * Core Function: NUKE_SITE
- * This is the primary blocking engine for teachers.
- */
 async function nukeSite(domain) {
-    const ruleId = Math.floor(Math.random() * 1000000) + 1;
+    // 1. Clean the domain
+    const cleanDomain = domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+    const ruleId = Math.floor(Math.random() * 900000) + 100000;
 
-    try {
-        // A. Add to Chrome's high-speed Declarative engine
-        await chrome.declarativeNetRequest.updateDynamicRules({
-            addRules: [{
-                "id": ruleId,
-                "priority": 100, // Max priority to override everything else
-                "action": { 
-                    "type": "redirect", 
-                    "redirect": { "url": BLOCKED_PAGE } 
-                },
-                "condition": { 
-                    "urlFilter": `||${domain}^`, 
-                    "resourceTypes": ["main_frame", "sub_frame", "script"] 
-                }
-            }]
-        });
+    // 2. Add the Rule (For future visits)
+    await chrome.declarativeNetRequest.updateDynamicRules({
+        addRules: [{
+            "id": ruleId,
+            "priority": 100,
+            "action": { "type": "redirect", "redirect": { "url": BLOCKED_PAGE } },
+            "condition": { "urlFilter": `||${cleanDomain}^`, "resourceTypes": ["main_frame"] }
+        }]
+    });
 
-        // B. Wipe Cache/Service Workers specifically for this domain
-        // This stops Cloudflare Pages/BillyBong50 from bypassing the block.
-        chrome.browsingData.remove({
-            "origins": [`https://${domain}`, `http://${domain}`]
-        }, { "cache": true, "serviceWorkers": true });
-
-        // C. Send Notification
-        chrome.notifications.create({
-            type: "basic",
-            iconUrl: "icon.png",
-            title: "Billy Blocksi",
-            message: `Access to ${domain} has been restricted by your teacher.`
-        });
-
-        console.log(`Billy: ${domain} nuked (ID: ${ruleId})`);
-    } catch (e) {
-        console.error("Block failed:", e);
+    // 3. THE INSTANT KILL (For the current visit)
+    // Find any tab that matches the domain and force-redirect it NOW
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+        if (tab.url && tab.url.includes(cleanDomain)) {
+            chrome.tabs.update(tab.id, { url: BLOCKED_PAGE });
+        }
     }
+
+    // 4. Force-Inject a "Stop" command into all tabs (Nuclear Option)
+    // This stops the page from loading even if the redirect is slow
+    chrome.tabs.query({url: `*://*.${cleanDomain}/*`}, (tabs) => {
+        tabs.forEach(tab => {
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: () => { window.stop(); document.body.innerHTML = "<h1>Blocked by Teacher</h1>"; }
+            });
+        });
+    });
 }
 
-// 2. Command Listener
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "REMOTE_BLOCK") {
-        nukeSite(request.domain);
-        sendResponse({ success: true });
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.action === "REMOTE_BLOCK") {
+        nukeSite(msg.domain).then(() => sendResponse({ success: true }));
+        return true;
     }
-    return true; 
 });
