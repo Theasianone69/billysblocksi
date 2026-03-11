@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Billy Blocksi - Enterprise Lab</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; margin: 0; background: #1a1a1a; color: white; }
+        #student-side { flex: 2; border-right: 5px solid #333; display: flex; flex-direction: column; }
+        #teacher-side { flex: 1; padding: 20px; background: #252525; }
+        .browser-bar { background: #333; padding: 10px; display: flex; gap: 10px; }
+        iframe { flex: 1; background: white; border: none; }
+        .nuke-btn { background: #ff4d4d; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%; }
+        input { width: 90%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: none; }
+        .log { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; height: 150px; overflow-y: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="student-side">
+        <div class="browser-bar">
+            <span style="color: #aaa;">Student View:</span>
+            <input type="text" id="url-bar" value="https://poki.com" style="margin:0; width: 60%;">
+            <button onclick="loadSite()">Go</button>
+        </div>
+        <iframe id="student-frame" src="about:blank"></iframe>
+    </div>
+
+    <div id="teacher-side">
+        <h2>Teacher Command</h2>
+        <p>Enter domain to "Nuke":</p>
+        <input type="text" id="target-domain" placeholder="e.g. poki.com">
+        <button class="nuke-btn" onclick="simulateNuke()">DEPLOY BLOCK</button>
+        
+        <div class="log" id="system-log">
+            [SYSTEM]: Billy Blocksi Engine Online...<br>
+            [SYSTEM]: uBlock Rulesets Loaded...
+        </div>
+    </div>
+
+    <script>
+        let blockedDomains = [];
+
+        function log(msg) {
+            const logBox = document.getElementById('system-log');
+            logBox.innerHTML += `<br>[CMD]: ${msg}`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function loadSite() {
+            const url = document.getElementById('url-bar').value;
+            const domain = url.replace('https://', '').replace('http://', '').split('/')[0];
+            
+            if (blockedDomains.includes(domain)) {
+                log(`BLOCK TRIGGERED: Access to ${domain} denied.`);
+                document.getElementById('student-frame').srcdoc = `
+                    <div style="font-family:sans-serif; text-align:center; padding:50px;">
+                        <h1 style="color:red;">🚫 Access Restricted</h1>
+                        <p>This site has been blocked by your teacher.</p>
+                    </div>`;
+            } else {
+                log(`Loading ${url}...`);
+                document.getElementById('student-frame').src = url;
+            }
+        }
+
+        function simulateNuke() {
+            const domain = document.getElementById('target-domain').value;
+            if (domain) {
+                blockedDomains.push(domain);
+                log(`TEACHER DEPLOYED BLOCK: ${domain}`);
+                loadSite(); // Refresh the view
+            }
+        }
+    </script>
+</body>
+</html>
